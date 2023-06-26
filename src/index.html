@@ -19,37 +19,40 @@
     </header>
     <div id="main">
       <input type="search" name="search" id="searchTerms" /> 🔎
-      <table id="teamsTable">
-        <thead>
-          <tr>
-            <th>Promotion</th>
-            <th>Members</th>
-            <th>Project Name</th>
-            <th>Project URL</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-        <tfoot>
-          <tr>
-            <td>
-              <input type="text" name="promotion" id="promotion" placeholder="Enter promotion" />
-            </td>
-            <td>
-              <input type="text" name="members" id="members" placeholder="Enter members" />
-            </td>
-            <td>
-              <input type="text" name="name" id="name" placeholder="Enter project name" />
-            </td>
-            <td>
-              <input type="text" name="url" id="url" placeholder="project URL" />
-            </td>
-            <td>
-              <button type="submit">💾</button>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      <form id="teamsForm" action="" method="get">
+        <table id="teamsTable">
+          <thead>
+            <tr>
+              <th>Promotion</th>
+              <th>Members</th>
+              <th>Project Name</th>
+              <th>Project URL</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td>
+                <input type="text" name="promotion" id="promotion" placeholder="Enter promotion" required />
+              </td>
+              <td>
+                <input type="text" name="members" id="members" placeholder="Enter members" required />
+              </td>
+              <td>
+                <input type="text" name="name" id="name" placeholder="Enter project name" required />
+              </td>
+              <td>
+                <input type="text" name="url" id="url" placeholder="project URL" required />
+              </td>
+              <td>
+                <button type="submit">💾</button>
+                <button type="reset">✖</button>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </form>
     </div>
     <footer>
       <a href="https://github.com/andreimuntean21/teams-networking">Source Code</a>

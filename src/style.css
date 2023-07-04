@@ -7,6 +7,7 @@ body {
   flex-direction: column;
   min-height: 100%;
   margin: 0;
+  background-color: #e9f6f8;
 }
 
 header {
@@ -53,6 +54,24 @@ header h2 {
 #teamsTable th,
 #teamsTable td {
   border: 1px solid #057988;
+  padding: 5px;
+}
+
+#teamsTable th {
+  background-color: #0798ab;
+  color: white;
+}
+
+#teamsTable tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#teamsTable tfoot input {
+  width: 100%;
+}
+
+#teamsTable tfoot input:not([type="image" i]) {
+  box-sizing: border-box;
 }
 
 .remove-btn:hover {
@@ -96,4 +115,8 @@ footer a {
 
 footer a:hover {
   background: #25b4c7;
+}
+
+#main {
+  padding: 15px;
 }

@@ -80,15 +80,17 @@ function loadTeams() {
 function startEdit(id) {
   editId = id;
   const team = allTeams.find(team => team.id == id);
+  setTeamValues(team);
+}
 
+function setTeamValues(team) {
   $("#promotion").value = team.promotion;
   $("#members").value = team.members;
   $("input[name=name]").value = team.name;
   $("input[name=url]").value = team.url;
 }
 
-function onSubmit(e) {
-  e.preventDefault();
+function getTeamValues() {
   const promotion = $("#promotion").value;
   const members = $("#members").value;
   const name = $("input[name=name]").value;
@@ -99,6 +101,14 @@ function onSubmit(e) {
     name: name,
     url: url
   };
+  return team;
+}
+
+function onSubmit(e) {
+  e.preventDefault();
+
+  const team = getTeamValues();
+
   if (editId) {
     team.id = editId;
     updateTeamRequest(team).then(status => {
@@ -115,24 +125,22 @@ function onSubmit(e) {
   }
 }
 
-function filterTeams(allTeams, searchText) {
-  return allTeams.filter(team => {
-    return Object.entries(team).some(entry => {
+function filterElements(elements, search) {
+  search = search.toLowerCase();
+  return elements.filter(element => {
+    return Object.entries(element).some(entry => {
       if (entry[0] !== "id") {
-        return entry[1].toLowerCase().includes(searchText);
+        return entry[1].toLowerCase().includes(search);
       }
     });
   });
 }
 
-function searchTeams(e) {
-  let searchText = e.target.value.toLowerCase();
-  const teams = filterTeams(allTeams, searchText);
-  displayTeams(teams);
-}
-
 function initEvents() {
-  $("#searchTeams").addEventListener("input", searchTeams);
+  $("#searchTeams").addEventListener("input", e => {
+    const teams = filterElements(allTeams, e.target.value);
+    displayTeams(teams);
+  });
 
   $("#teamsTable tbody").addEventListener("click", e => {
     if (e.target.matches("a.remove-btn")) {

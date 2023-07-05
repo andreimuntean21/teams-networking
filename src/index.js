@@ -80,7 +80,6 @@ function loadTeams() {
 function startEdit(id) {
   editId = id;
   const team = allTeams.find(team => team.id == id);
-  console.warn("start edit", team);
 
   $("#promotion").value = team.promotion;
   $("#members").value = team.members;
@@ -102,7 +101,6 @@ function onSubmit(e) {
   };
   if (editId) {
     team.id = editId;
-    console.warn("submit", team);
     updateTeamRequest(team).then(status => {
       if (status.success) {
         window.location.reload();
@@ -119,18 +117,15 @@ function onSubmit(e) {
 
 function searchTeams(e) {
   let searchText = e.target.value.toLowerCase();
-  console.warn(searchText);
-  console.warn(allTeams);
-  var filteredTeams = allTeams.filter(team => {
-    return (
-      team.promotion.toLowerCase().includes(searchText) ||
-      team.members.toLowerCase().includes(searchText) ||
-      team.name.toLowerCase().includes(searchText) ||
-      team.url.toLowerCase().includes(searchText)
-    );
+  const teams = allTeams.filter(team => {
+    const matches = Object.entries(team).some(entry => {
+      if (entry[0] !== "id") {
+        return entry[1].toLowerCase().includes(searchText);
+      }
+    });
+    return matches;
   });
-  console.warn("filteredTeams", filteredTeams);
-  displayTeams(filteredTeams);
+  displayTeams(teams);
 }
 
 function initEvents() {
@@ -139,10 +134,8 @@ function initEvents() {
   $("#teamsTable tbody").addEventListener("click", e => {
     if (e.target.matches("a.remove-btn")) {
       const id = e.target.dataset.id;
-      //console.warn("remove %s", id);
       deleteTeamRequest(id).then(status => {
         if (status.success) {
-          //console.warn("delete done", status);
           loadTeams();
         }
       });

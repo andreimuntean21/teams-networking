@@ -117,7 +117,15 @@ function onSubmit(e) {
   }
 }
 
+function searchTeams(e) {
+  let searchText = e.target.value;
+  console.warn(searchText);
+  console.warn(allTeams);
+}
+
 function initEvents() {
+  $("#searchTeams").addEventListener("input", searchTeams);
+
   $("#teamsTable tbody").addEventListener("click", e => {
     if (e.target.matches("a.remove-btn")) {
       const id = e.target.dataset.id;

@@ -127,10 +127,8 @@ function filterTeams(allTeams, searchText) {
 
 function searchTeams(e) {
   let searchText = e.target.value.toLowerCase();
-  const teams = allTeams.filter(team => {
-    const matches = filterTeams(allTeams, searchText);
-    displayTeams(teams);
-  });
+  const teams = filterTeams(allTeams, searchText);
+  displayTeams(teams);
 }
 
 function initEvents() {

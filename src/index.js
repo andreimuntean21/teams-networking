@@ -62,12 +62,22 @@ function getTeamAsHtml(team) {
 
     </tr>`;
 }
+
 let previewDisplayTeams = [];
+
 function displayTeams(teams) {
-  if (previewDisplayTeams === teams) {
+  if (teams === previewDisplayTeams) {
     console.warn("same teams already displayed");
     return;
   }
+
+  if (teams.length === previewDisplayTeams.length) {
+    if (teams.every((team, i) => team === previewDisplayTeams[i])) {
+      console.warn("sameContent");
+      return;
+    }
+  }
+
   previewDisplayTeams = teams;
   console.warn("displayTeams", teams);
   const teamsHTML = teams.map(getTeamAsHtml);

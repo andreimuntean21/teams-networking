@@ -7,6 +7,14 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
+function showLoadingMask() {
+  $("#teamsForm").classList.add("loading-mask");
+}
+
+function hideLoadingMask() {
+  $("#teamsForm").classList.remove("loading-mask");
+}
+
 function deleteTeamRequest(id, callback) {
   return fetch("http://localhost:3000/teams-json/delete", {
     method: "DELETE",
@@ -96,16 +104,16 @@ function loadTeamsRequest() {
 }
 
 /**
- * 
+ *
  * @returns {Promise<Team[]>}
  */
 
 function loadTeams() {
-    return loadTeamsRequest().then(teams => {
-      allTeams = teams;
-      displayTeams(teams);
-      return teams;
-    });
+  return loadTeamsRequest().then(teams => {
+    allTeams = teams;
+    displayTeams(teams);
+    return teams;
+  });
 }
 
 function startEdit(id) {
@@ -139,6 +147,8 @@ function onSubmit(e) {
 
   const team = getTeamValues();
 
+  showLoadingMask();
+
   if (editId) {
     team.id = editId;
     updateTeamRequest(team).then(({ success }) => {
@@ -158,6 +168,8 @@ function onSubmit(e) {
 
         displayTeams(allTeams);
         $("#teamsForm").reset();
+
+        hideLoadingMask();
       }
     });
   } else {
@@ -170,6 +182,8 @@ function onSubmit(e) {
         displayTeams(allTeams);
 
         $("#teamsForm").reset();
+
+        hideLoadingMask();
       }
     });
   }
@@ -195,9 +209,11 @@ function initEvents() {
   $("#teamsTable tbody").addEventListener("click", e => {
     if (e.target.matches("a.remove-btn")) {
       const id = e.target.dataset.id;
-      deleteTeamRequest(id, ({ success }) => {
+      showLoadingMask();
+      deleteTeamRequest(id, async ({ success }) => {
         if (success) {
-          loadTeams();
+          await loadTeams();
+          hideLoadingMask();
         }
       });
     } else if (e.target.matches("a.edit-btn")) {
@@ -222,7 +238,7 @@ function sleep(ms) {
   });
 }
 
-(async() => {
+(async () => {
   console.info("1. start sleeping...");
   await sleep(2000);
   console.warn("2. ready to do %o", "next job");
@@ -230,13 +246,8 @@ function sleep(ms) {
 
 initEvents();
 
-
 (async () => {
-  $("#teamsForm").classList.add("loading-mask");
-  // loadTeams().then(teams => {
-  //   console.warn("teams", teams);
-  //   $("#teamsForm").classList.remove("loading-mask");
-  // })
-  const teams = await loadTeams();
-  $("#teamsForm").classList.remove("loading-mask");
+  showLoadingMask();
+  await loadTeams();
+  hideLoadingMask();
 })();

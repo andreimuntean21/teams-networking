@@ -86,18 +86,25 @@ function displayTeams(teams) {
   $("#teamsTable tbody").innerHTML = teamsHTML.join("");
 }
 
-function loadTeams() {
-  fetch("http://localhost:3000/teams-json", {
+function loadTeamsRequest() {
+  return fetch("http://localhost:3000/teams-json", {
     method: "GET",
     headers: {
       "Content-Type": "application/json"
     }
-  })
-    .then(r => r.json())
+  }).then(r => r.json());
+}
 
-    .then(teams => {
+/**
+ * 
+ * @returns {Promise<Team[]>}
+ */
+
+function loadTeams() {
+    return loadTeamsRequest().then(teams => {
       allTeams = teams;
       displayTeams(teams);
+      return teams;
     });
 }
 
@@ -216,18 +223,20 @@ function sleep(ms) {
 }
 
 (async() => {
-  console.info("start sleeping...");
-  // sleep(5000).then(() => {
-  //   console.warn("1. ready to do %o", "next job");
-  //});
-  await sleep(5000);
+  console.info("1. start sleeping...");
+  await sleep(2000);
   console.warn("2. ready to do %o", "next job");
 })();
 
-loadTeams();
 initEvents();
 
 
-$("#teamsForm").classList.add("loading-mask");
-await sleep(5000);
-//$("#teamsForm").classList.remove("loading-mask");
+(async () => {
+  $("#teamsForm").classList.add("loading-mask");
+  // loadTeams().then(teams => {
+  //   console.warn("teams", teams);
+  //   $("#teamsForm").classList.remove("loading-mask");
+  // })
+  const teams = await loadTeams();
+  $("#teamsForm").classList.remove("loading-mask");
+})();

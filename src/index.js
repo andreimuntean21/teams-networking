@@ -120,13 +120,19 @@ function onSubmit(e) {
     team.id = editId;
     updateTeamRequest(team).then(status => {
       if (status.success) {
-        window.location.reload();
+        loadTeams();
+        $("#teamsForm").reset();
       }
     });
   } else {
     createTeamRequest(team).then(status => {
       if (status.success) {
-        window.location.reload();
+        // v.1
+        //window.location.reload();
+
+        // v.2
+        loadTeams();
+        $("#teamsForm").reset();
       }
     });
   }
@@ -165,6 +171,7 @@ function initEvents() {
 
   $("#teamsForm").addEventListener("submit", onSubmit);
   $("#teamsForm").addEventListener("reset", () => {
+    console.warn("reset");
     editId = undefined;
   });
 }

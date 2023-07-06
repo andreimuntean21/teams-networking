@@ -142,7 +142,7 @@ function getTeamValues() {
   };
 }
 
-function onSubmit(e) {
+async function onSubmit(e) {
   e.preventDefault();
 
   const team = getTeamValues();
@@ -151,41 +151,40 @@ function onSubmit(e) {
 
   if (editId) {
     team.id = editId;
-    updateTeamRequest(team).then(({ success }) => {
-      if (success) {
-        allTeams = allTeams.map(t => {
-          if (t.id === editId) {
-            console.warn("team", team);
-            //return team;
-            // return  {...team}
-            return {
-              ...t,
-              ...team
-            };
-          }
-          return t;
-        });
+    const { success } = await updateTeamRequest(team);
+    if (success) {
+      allTeams = allTeams.map(t => {
+        if (t.id === editId) {
+          console.warn("team", team);
+          //return team;
+          // return  {...team}
+          return {
+            ...t,
+            ...team
+          };
+        }
+        return t;
+      });
 
-        displayTeams(allTeams);
-        $("#teamsForm").reset();
+      displayTeams(allTeams);
+      $("#teamsForm").reset();
 
-        hideLoadingMask();
-      }
-    });
-  } else {
-    createTeamRequest(team).then(status => {
-      if (status.success) {
-        //console.info("saved", JSON.parse(JSON.stringify(team)));
-        team.id = status.id;
-        //allTeams.push(team);
-        allTeams = [...allTeams, team];
-        displayTeams(allTeams);
+      hideLoadingMask();
+    } else {
+      createTeamRequest(team).then(status => {
+        if (status.success) {
+          //console.info("saved", JSON.parse(JSON.stringify(team)));
+          team.id = status.id;
+          //allTeams.push(team);
+          allTeams = [...allTeams, team];
+          displayTeams(allTeams);
 
-        $("#teamsForm").reset();
+          $("#teamsForm").reset();
 
-        hideLoadingMask();
-      }
-    });
+          hideLoadingMask();
+        }
+      });
+    }
   }
 }
 

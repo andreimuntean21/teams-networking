@@ -50,6 +50,18 @@ header h2 {
   margin: 5px 0;
 }
 
+.tbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.tbar label {
+  padding: 0 5px;
+  cursor: pointer;
+}
+
 #teamsTable {
   width: 100%;
   border-collapse: collapse;
@@ -129,7 +141,7 @@ footer a:hover {
   position: relative;
 }
 .loading-mask::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;

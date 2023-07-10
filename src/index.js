@@ -129,24 +129,29 @@ async function onSubmit(e) {
   }
 }
 
-let timer;
-
 function debounce(fn, ms) {
+  let timer;
   console.info("debounce", ms);
 
   return function (e) {
-    console.info("search...", e.target.value);
+    console.info("inside debounce...", e.target.value);
 
     clearTimeout(timer);
     timer = setTimeout(function () {
-      console.warn("timeout search");
+      console.warn("debounce timeout");
       fn(e);
     }, ms);
-    console.info("timer %o", timer);
+    //console.info("timer %o", timer);
   };
 }
 
 function initEvents() {
+  $("#removeSelected").addEventListener(
+    "click",
+    debounce(() => {
+      console.info("remove all");
+    }, 3000)
+  );
   $("#searchTeams").addEventListener(
     "input",
     debounce(e => {

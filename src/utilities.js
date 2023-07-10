@@ -37,7 +37,6 @@ export function sleep(ms) {
 (async () => {
   console.info("1. start sleeping...");
   await sleep(2000);
-  console.warn("2. ready to do %o", "next job");
 })();
 
 export function filterElements(elements, search) {

@@ -92,6 +92,13 @@ function startEdit(id) {
   //const team = allTeams.find(team => team.id == id);
   //setTeamValues(team);
   displayTeams(allTeams, id);
+  setInputsDisabled(true);
+}
+
+function setInputsDisabled(disabled) {
+  $$("tfoot input, tfoot button").forEach(el => {
+    el.disabled = disabled;
+  });
 }
 
 function setTeamValues({ promotion, members, name, url }) {
@@ -102,8 +109,8 @@ function setTeamValues({ promotion, members, name, url }) {
 }
 
 function getTeamValues() {
-  const promotion = $("#promotion").value;
-  const members = $("#members").value;
+  const promotion = $("input[name=promotion]").value;
+  const members = $("input[name=members]").value;
   const name = $("input[name=name]").value;
   const url = $("input[name=url]").value;
   return {

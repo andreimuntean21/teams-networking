@@ -1,84 +1,81 @@
 import "./style.css";
-import { deleteTeamRequest, updateTeamRequest, createTeamRequest, loadTeamsRequest } from "./middleware";
+import { loadTeamsRequest, createTeamRequest, deleteTeamRequest, updateTeamRequest } from "./middleware";
+//import * as middleware from "./middleware";
+//  usage : middleware.loadTeamsRequest()
 import { $, $$, debounce, filterElements, mask, sleep, unmask } from "./utilities";
-//import { debounce } from "lodash"; //bad - don't import all functions
-//import debounce from "lodash/debounce"; //better
+// import { debounce } from "lodash"; // bad - don't import all functions
+// import debounce from "lodash/debounce"; // better
 
-let allTeams = [];
 let editId;
+let allTeams = [];
 const form = "#teamsForm";
 
-function getTeamAsHtml({ id, promotion, members, name, url }) {
+function getTeamAsHTML({ id, promotion, members, name, url }) {
   const displayUrl = url.startsWith("https://github.com/") ? url.substring(19) : url;
   return `<tr>
-    <td style="text-align: center"> <input type="checkbox" name="selected" value="" id="${id}" /> </td>
+    <td style="text-align: center">
+      <input type="checkbox" name="selected" value="${id}" />
+    </td>
     <td>${promotion}</td>
-
     <td>${members}</td>
-
     <td>${name}</td>
-
     <td><a href="${url}" target="_blank">${displayUrl}</a></td>
-
     <td>
-    <button type="button" data-id="${id}" class="action-btn edit-btn">&#9998;</button>
-    <button type="button" data-id="${id}" class="action-btn remove-btn">♻</button>
-  </td>
-</tr>`;
+      <button type="button" data-id="${id}" class="action-btn edit-btn">&#9998;</button>
+      <button type="button" data-id="${id}" class="action-btn remove-btn">♻</button>
+    </td>
+  </tr>`;
 }
 
 function getTeamAsHTMLInputs({ id, promotion, members, name, url }) {
   return `<tr>
-  <td style="text-align: center">
-    <input type="checkbox" name="selected" value="${id}" />
-  </td>
-  <td>
-    <input type="text" name="promotion" value="${promotion}" placeholder="Enter promotion" required />
-  </td>
-  <td>
-    <input type="text" name="members" value="${members}" placeholder="Enter members" required />
-  </td>
-  <td>
-    <input type="text" name="name" value="${name}" placeholder="Enter name" required />
-  </td>
-  <td>
-    <input type="text" name="url" value="${url}" placeholder="Enter url" required />
-  </td>
-  <td>
-    <button type="submit" class="action-btn">💾</button>
-    <button type="reset" class="action-btn">✖</button>
+    <td style="text-align: center">
+      <input type="checkbox" name="selected" value="${id}" />
     </td>
-
-    </tr>`;
+    <td>
+      <input type="text" name="promotion" value="${promotion}" placeholder="Enter promotion" required />
+    </td>
+    <td>
+      <input type="text" name="members" value="${members}" placeholder="Enter members" required />
+    </td>
+    <td>
+      <input type="text" name="name" value="${name}" placeholder="Enter name" required />
+    </td>
+    <td>
+      <input type="text" name="url" value="${url}" placeholder="Enter url" required />
+    </td>
+    <td>
+      <button type="submit" class="action-btn">💾</button>
+      <button type="reset" class="action-btn">✖</button>
+    </td>
+  </tr>`;
 }
 
 let previewDisplayTeams = [];
 
-function displayTeams(teams, editId) {
-  if (!editId && teams === previewDisplayTeams) {
+function displayTeams(teams, editId, force) {
+  if (force !== true && !editId && teams === previewDisplayTeams) {
     console.warn("same teams already displayed");
     return;
   }
 
-  if (!editId && teams.length === previewDisplayTeams.length) {
+  if (!force && !editId && teams.length === previewDisplayTeams.length) {
     if (teams.every((team, i) => team === previewDisplayTeams[i])) {
-      console.warn("sameContent");
+      console.warn("same content");
       return;
     }
   }
 
   previewDisplayTeams = teams;
   console.warn("displayTeams", teams);
-  const teamsHTML = teams.map(team => (team.id === editId ? getTeamAsHTMLInputs(team) : getTeamAsHtml(team)));
-
+  const teamsHTML = teams.map(team => (team.id === editId ? getTeamAsHTMLInputs(team) : getTeamAsHTML(team)));
   $("#teamsTable tbody").innerHTML = teamsHTML.join("");
 }
 
 /**
  *
- * @returns {Promise<Team[]>}
+ * @returns {Promise<{id: string, promotion: string}[]>}
  */
-
 function loadTeams() {
   return loadTeamsRequest().then(teams => {
     allTeams = teams;
@@ -88,6 +85,10 @@ function loadTeams() {
 }
 
 function startEdit(id) {
+  // clean inputs - because they will be reseted
+  //   after for is submited or cancel edit
+  $("#teamsForm").reset();
+
   editId = id;
   //const team = allTeams.find(team => team.id == id);
   //setTeamValues(team);
@@ -127,7 +128,6 @@ async function onSubmit(e) {
   const team = getTeamValues();
 
   mask(form);
-
   let status;
 
   if (editId) {
@@ -137,8 +137,8 @@ async function onSubmit(e) {
       allTeams = allTeams.map(t => {
         if (t.id === editId) {
           console.warn("team", team);
-          //return team;
-          // return  {...team}
+          // return team;
+          // return { ...team };
           return {
             ...t,
             ...team
@@ -152,10 +152,10 @@ async function onSubmit(e) {
     if (status.success) {
       //console.info("saved", JSON.parse(JSON.stringify(team)));
       team.id = status.id;
-      //allTeams.push(team);
       allTeams = [...allTeams, team];
     }
   }
+
   if (status.success) {
     displayTeams(allTeams);
     $("#teamsForm").reset();
@@ -176,11 +176,6 @@ async function removeSelected() {
 
   await loadTeams();
   unmask("#main");
-}
-
-function removeSelected() {
-  const selected = document.querySelectorAll("input[name=selected]:checked");
-  console.warn("selected", selected);
 }
 
 function initEvents() {
@@ -215,6 +210,7 @@ function initEvents() {
   $("#teamsTable tbody").addEventListener("click", e => {
     if (e.target.matches(".remove-btn")) {
       const id = e.target.dataset.id;
+      //console.warn("remove %o", id);
       mask(form);
       deleteTeamRequest(id, async ({ success }) => {
         if (success) {
@@ -230,9 +226,12 @@ function initEvents() {
 
   $("#teamsForm").addEventListener("submit", onSubmit);
   $("#teamsForm").addEventListener("reset", () => {
-    displayTeams(allTeams);
-    console.warn("reset");
-    editId = undefined;
+    console.warn("reset", editId);
+    if (editId) {
+      editId = undefined;
+      displayTeams(allTeams, editId, true);
+      setInputsDisabled(false);
+    }
   });
 }
 

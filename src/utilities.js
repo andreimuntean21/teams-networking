@@ -8,17 +8,15 @@ export function $$(selector) {
 
 export function debounce(fn, ms) {
   let timer;
-  console.info("debounce", ms);
 
   return function (e) {
-    console.info("inside debounce...", e.target.value);
+    const context = this;
+    const args = arguments;
 
     clearTimeout(timer);
     timer = setTimeout(function () {
-      console.warn("debounce timeout");
-      fn(e);
+      fn.apply(context, args);
     }, ms);
-    //console.info("timer %o", timer);
   };
 }
 
@@ -26,9 +24,8 @@ export function debounce(fn, ms) {
  *
  * @param {String|Element} el
  */
-
 export function mask(el) {
-  if (typeof el == "string") {
+  if (typeof el === "string") {
     el = $(el);
   }
   el && el.classList.add("loading-mask");
@@ -38,12 +35,11 @@ export function mask(el) {
  *
  * @param {String|Element} el
  */
-
 export function unmask(el) {
-  if (typeof el == "string") {
+  if (typeof el === "string") {
     el = $(el);
   }
-  el.classList.remove("loading-mask");
+  el && el.classList.remove("loading-mask");
 }
 
 export function sleep(ms) {
@@ -53,11 +49,6 @@ export function sleep(ms) {
     }, ms);
   });
 }
-
-(async () => {
-  console.info("1. start sleeping...");
-  await sleep(2000);
-})();
 
 export function filterElements(elements, search) {
   search = search.toLowerCase();
@@ -69,3 +60,9 @@ export function filterElements(elements, search) {
     });
   });
 }
+
+(async () => {
+  console.info("1. start sleeping...");
+  await sleep(2000);
+  console.warn("2. ready to do %o", "next job");
+})();

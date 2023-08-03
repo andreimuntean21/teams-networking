@@ -1,6 +1,8 @@
 import "./style.css";
 import { deleteTeamRequest, updateTeamRequest, createTeamRequest, loadTeamsRequest } from "./middleware";
 import { $, debounce, filterElements, mask, unmask } from "./utilities";
+//import { debounce } from "lodash"; //bad - don't import all functions
+//import debounce from "lodash/debounce"; //better
 
 let allTeams = [];
 let editId;
@@ -9,7 +11,7 @@ const form = "#teamsForm";
 function getTeamAsHtml({ id, promotion, members, name, url }) {
   const displayUrl = url.startsWith("https://github.com/") ? url.substring(19) : url;
   return `<tr>
-
+    <td> <input type="checkbox" name="selected" value="" id="${id}"> </td>
     <td>${promotion}</td>
 
     <td>${members}</td>
@@ -127,6 +129,11 @@ async function onSubmit(e) {
     $("#teamsForm").reset();
     unmask(form);
   }
+}
+
+function removeSelected() {
+  const selected = document.querySelectorAll("input[name=selected]:checked");
+  console.warn("selected", selected);
 }
 
 function initEvents() {
